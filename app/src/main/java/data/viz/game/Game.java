@@ -1,5 +1,6 @@
 package data.viz.game;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,10 +12,12 @@ import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.util.Duration;
 
 public class Game extends Application {
 
     private static final int CIRCLE_DIAMETER = 15;
+    private static final int DISPLAY_DURATION_MS = 1000;
 
     private final int numberOfPoints;
     private final int extraPoints;
@@ -25,6 +28,10 @@ public class Game extends Application {
 
     private RandomPointsRectangle randomPointsRectangle1;
     private RandomPointsRectangle randomPointsRectangle2;
+
+    private Button yesButton;
+    private Button noButton;
+    private PauseTransition hideTransition;
 
     public Game() {
         this(5, 5);
@@ -56,6 +63,23 @@ public class Game extends Application {
         if (Math.random() < 0.5) {
             this.randomPointsRectangle2.addRandomPoints(extraPoints);
         }
+        startDisplayTimer();
+    }
+
+    private void startDisplayTimer() {
+        yesButton.setDisable(true);
+        noButton.setDisable(true);
+        if (hideTransition != null) {
+            hideTransition.stop();
+        }
+        hideTransition = new PauseTransition(Duration.millis(DISPLAY_DURATION_MS));
+        hideTransition.setOnFinished(event -> {
+            randomPointsRectangle1.hidePoints();
+            randomPointsRectangle2.hidePoints();
+            yesButton.setDisable(false);
+            noButton.setDisable(false);
+        });
+        hideTransition.play();
     }
 
     private void compareAnswer(boolean answer) {
@@ -94,25 +118,25 @@ public class Game extends Application {
         hbox.getChildren().add(this.randomPointsRectangle1);
         hbox.getChildren().add(this.randomPointsRectangle2);
 
-        Button YesButton = new Button("Yes");
-        YesButton.setPrefSize(120, 50);
-        YesButton.setStyle("-fx-font-size: 18px;");
-        YesButton.setOnAction(event -> {
+        yesButton = new Button("Yes");
+        yesButton.setPrefSize(120, 50);
+        yesButton.setStyle("-fx-font-size: 18px;");
+        yesButton.setOnAction(event -> {
             compareAnswer(true);
         });
 
-        Button NoButton = new Button("No");
-        NoButton.setPrefSize(120, 50);
-        NoButton.setStyle("-fx-font-size: 18px;");
-        NoButton.setOnAction(event -> {
+        noButton = new Button("No");
+        noButton.setPrefSize(120, 50);
+        noButton.setStyle("-fx-font-size: 18px;");
+        noButton.setOnAction(event -> {
             compareAnswer(false);
         });
 
         HBox hbox2 = new HBox(20);
         hbox2.setPadding(new Insets(20));
         hbox2.setAlignment(Pos.CENTER);
-        hbox2.getChildren().add(YesButton);
-        hbox2.getChildren().add(NoButton);
+        hbox2.getChildren().add(yesButton);
+        hbox2.getChildren().add(noButton);
 
         VBox vbox = new VBox(20);
         vbox.setPadding(new Insets(20));

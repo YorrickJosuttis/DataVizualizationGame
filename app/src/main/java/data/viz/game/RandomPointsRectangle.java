@@ -29,10 +29,15 @@ public class RandomPointsRectangle extends Canvas {
     }
 
     public void clearPoints() {
+        hidePoints();
+        points.clear();
+    }
+
+    // removes the points visually but keeps them for comparison
+    public void hidePoints() {
         var gc = getGraphicsContext2D();
         gc.clearRect(0, 0, getWidth(), getHeight());
         drawBorder();
-        points.clear();
     }
 
     private boolean overlaps(double x, double y) {
